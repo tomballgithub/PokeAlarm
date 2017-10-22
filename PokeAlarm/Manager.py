@@ -24,6 +24,9 @@ from LocationServices import LocationService
 
 log = logging.getLogger('Manager')
 
+#jmk3
+execfile("/root/pokemon/inaccessible_gyms.txt")
+#jmk3
 
 class Manager(object):
     def __init__(self, name, google_key, locale, units, timezone, time_limit, max_attempts, location, quiet, cache_type,
@@ -847,6 +850,21 @@ class Manager(object):
             return
 
         gym_id = egg['id']
+        raid_end = egg['raid_end']
+
+#jmk3        
+        if any(gym_id in x for x in IGNORE_GYM_LIST):
+            log.info("Raid {} ignored.  Present on local ignore list.".format(gym_id))
+	    return
+#jmk3
+
+        # raid history will contains any raid processed
+        if gym_id in self.__raid_hist:
+            old_raid_end = self.__raid_hist[gym_id]['raid_end']
+            if old_raid_end == raid_end:
+                if self.__quiet is False:
+                    log.info("Raid {} ignored. Was previously processed.".format(gym_id))
+                return
 
         # Check if egg has been processed yet
         if self.__cache.get_egg_expiration(gym_id) is not None:
@@ -932,11 +950,23 @@ class Manager(object):
         pkmn_id = raid['pkmn_id']
         raid_end = raid['raid_end']
 
-        # Check if raid has been processed
-        if self.__cache.get_raid_expiration(gym_id) is not None:
-            if self.__quiet is False:
-                log.info("Raid {} ignored. Was previously processed.".format(gym_id))
-            return
+#jmk3        
+        if any(gym_id in x for x in IGNORE_GYM_LIST):
+            log.info("Raid {} ignored.  Present on local ignore list.".format(gym_id))
+	    return
+#jmk3
+
+        # raid history will contain the end date and also the pokemon if it has hatched
+        if gym_id in self.__raid_hist:
+            old_raid_end = self.__raid_hist[gym_id]['raid_end']
+            old_raid_pkmn = self.__raid_hist[gym_id].get('pkmn_id', 0)
+            if old_raid_end == raid_end:
+                if old_raid_pkmn == pkmn_id:  # raid with same end time exists and it has same pokemon id, skip it
+                    if self.__quiet is False:
+                        log.info("Raid {} ignored. Was previously processed.".format(gym_id))
+                    return
+
+        self.__raid_hist[gym_id] = dict(raid_end=raid_end, pkmn_id=pkmn_id)
 
         self.__cache.update_raid_expiration(gym_id, raid_end)
         log.info(self.__cache.get_raid_expiration(gym_id))
