@@ -395,7 +395,7 @@ class Manager(object):
                             timestr[0], name, cp, filt.min_cp, filt.max_cp, filt_ct))
                     continue
             else:
-                if filt.ignore_missing is True:
+                if (filt.ignore_missing is True) and (filt.min_cp > 0): # JMK
                     log.info("({}) {} rejected: CP information was missing - (F #{})".format(timestr[0], name, filt_ct))
                     continue
                 log.debug("Pokemon 'cp' was not checked because it was missing.")
@@ -408,7 +408,7 @@ class Manager(object):
                             name, level, filt.min_level, filt.max_level, filt_ct))
                     continue
             else:
-                if filt.ignore_missing is True:
+                if (filt.ignore_missing is True) and (filt.min_level > 0): # JMK
                     log.info("({}) {} rejected: Level information was missing - (F #{})".format(timestr[0], name, filt_ct))
                     continue
                 log.debug("Pokemon 'level' was not checked because it was missing.")
@@ -421,7 +421,7 @@ class Manager(object):
                             timestr[0], name, iv, filt.min_iv, filt.max_iv, filt_ct))
                     continue
             else:
-                if filt.ignore_missing is True:
+                if (filt.ignore_missing is True) and ((filt.min_iv > 0) or (filt.min_iv == 0)): # JMK
                     log.info("({}) {} rejected: 'IV' information was missing (F #{})".format(timestr[0], name, filt_ct))
                     continue
                 log.debug("Pokemon IV percent was not checked because it was missing.")
@@ -434,9 +434,9 @@ class Manager(object):
                             name, atk, filt.min_atk, filt.max_atk, filt_ct))
                     continue
             else:
-                if filt.ignore_missing is True:
-                    log.info("{} rejected: Attack IV information was missing - (F #{})".format(name, filt_ct))
-                    continue
+#JMK                if filt.ignore_missing is True:
+#JMK                    log.info("{} rejected: Attack IV information was missing - (F #{})".format(name, filt_ct))
+#JMK                    continue
                 log.debug("Pokemon 'atk' was not checked because it was missing.")
 
             # Check the Defense IV of the Pokemon
@@ -447,9 +447,9 @@ class Manager(object):
                             name, def_, filt.min_atk, filt.max_atk, filt_ct))
                     continue
             else:
-                if filt.ignore_missing is True:
-                    log.info("{} rejected: Defense IV information was missing - (F #{})".format(name, filt_ct))
-                    continue
+#JMK                if filt.ignore_missing is True:
+#JMK                    log.info("{} rejected: Defense IV information was missing - (F #{})".format(name, filt_ct))
+#JMK                    continue
                 log.debug("Pokemon 'def' was not checked because it was missing.")
 
             # Check the Stamina IV of the Pokemon
@@ -460,9 +460,9 @@ class Manager(object):
                             name, sta, filt.min_sta, filt.max_sta, filt_ct))
                     continue
             else:
-                if filt.ignore_missing is True:
-                    log.info("{} rejected: Stamina IV information was missing - (F #{})".format(name, filt_ct))
-                    continue
+#JMK                if filt.ignore_missing is True:
+#JMK                    log.info("{} rejected: Stamina IV information was missing - (F #{})".format(name, filt_ct))
+#JMK                    continue
                 log.debug("Pokemon 'sta' was not checked because it was missing.")
 
             # Check the Quick Move of the Pokemon
@@ -472,9 +472,9 @@ class Manager(object):
                         log.info("{} rejected: Quick move was not correct - (F #{})".format(name, filt_ct))
                     continue
             else:
-                if filt.ignore_missing is True:
-                    log.info("{} rejected: Quick move information was missing - (F #{})".format(name, filt_ct))
-                    continue
+#JMK                if filt.ignore_missing is True:
+#JMK                    log.info("{} rejected: Quick move information was missing - (F #{})".format(name, filt_ct))
+#JMK                    continue
                 log.debug("Pokemon 'quick_id' was not checked because it was missing.")
 
             # Check the Quick Move of the Pokemon
@@ -484,9 +484,9 @@ class Manager(object):
                         log.info("{} rejected: Charge move was not correct - (F #{})".format(name, filt_ct))
                     continue
             else:
-                if filt.ignore_missing is True:
-                    log.info("{} rejected: Charge move information was missing - (F #{})".format(name, filt_ct))
-                    continue
+#JMK                if filt.ignore_missing is True:
+#JMK                    log.info("{} rejected: Charge move information was missing - (F #{})".format(name, filt_ct))
+#JMK                    continue
                 log.debug("Pokemon 'charge_id' was not checked because it was missing.")
 
             # Check for a correct move combo
@@ -496,9 +496,9 @@ class Manager(object):
                         log.info("{} rejected: Moveset was not correct - (F #{})".format(name, filt_ct))
                     continue
             else:  # This will probably never happen? but just to be safe...
-                if filt.ignore_missing is True:
-                    log.info("{} rejected: Moveset information was missing - (F #{})".format(name, filt_ct))
-                    continue
+#JMK                if filt.ignore_missing is True:
+#JMK                    log.info("{} rejected: Moveset information was missing - (F #{})".format(name, filt_ct))
+#JMK                    continue
                 log.debug("Pokemon 'moveset' was not checked because it was missing.")
 
             # Check for a valid size
@@ -508,9 +508,9 @@ class Manager(object):
                         log.info("{} rejected: Size ({}) was not correct - (F #{})".format(name, size, filt_ct))
                     continue
             else:
-                if filt.ignore_missing is True:
-                    log.info("{} rejected: Size information was missing - (F #{})".format(name, filt_ct))
-                    continue
+#JMK                if filt.ignore_missing is True:
+#JMK                    log.info("{} rejected: Size information was missing - (F #{})".format(name, filt_ct))
+#JMK                    continue
                 log.debug("Pokemon 'size' was not checked because it was missing.")
 
             # Check for a valid gender
@@ -520,9 +520,9 @@ class Manager(object):
                         log.info("{} rejected: Gender ({}) was not correct - (F #{})".format(name, gender, filt_ct))
                     continue
             else:
-                if filt.ignore_missing is True:
-                    log.info("{} rejected: Gender information was missing - (F #{})".format(name, filt_ct))
-                    continue
+#JMK                if filt.ignore_missing is True:
+#JMK                    log.info("{} rejected: Gender information was missing - (F #{})".format(name, filt_ct))
+#JMK                    continue
                 log.debug("Pokemon 'gender' was not checked because it was missing.")
 
             # Check for a valid form
