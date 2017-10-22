@@ -21,6 +21,9 @@ from LocationServices import LocationService
 
 log = logging.getLogger('Manager')
 
+#jmk3
+execfile("/root/pokemon/inaccessible_gyms.txt")
+#jmk3
 
 class Manager(object):
     def __init__(self, name, google_key, locale, units, timezone, time_limit, max_attempts, location, quiet,
@@ -828,6 +831,12 @@ class Manager(object):
 
         raid_end = egg['raid_end']
 
+#jmk3        
+        if any(gym_id in x for x in IGNORE_GYM_LIST):
+            log.info("Raid {} ignored.  Present on local ignore list.".format(gym_id))
+	    return
+#jmk3
+
         # raid history will contains any raid processed
         if gym_id in self.__raid_hist:
             old_raid_end = self.__raid_hist[gym_id]['raid_end']
@@ -908,6 +917,12 @@ class Manager(object):
 
         pkmn_id = raid['pkmn_id']
         raid_end = raid['raid_end']
+
+#jmk3        
+        if any(gym_id in x for x in IGNORE_GYM_LIST):
+            log.info("Raid {} ignored.  Present on local ignore list.".format(gym_id))
+	    return
+#jmk3
 
         # raid history will contain the end date and also the pokemon if it has hatched
         if gym_id in self.__raid_hist:
