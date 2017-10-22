@@ -358,7 +358,7 @@ class Manager(object):
             log.info("Location successfully set to '{},{}'.".format(self.__location[0], self.__location[1]))
 
     # Check if a given pokemon is active on a filter
-    def check_pokemon_filter(self, filters, pkmn, dist, timestr, ''):
+    def check_pokemon_filter(self, filters, pkmn, dist, timestr):
         passed = False
 
         cp = pkmn['cp']
@@ -1022,7 +1022,7 @@ class Manager(object):
         }
 
         filters = self.__raid_settings['filters'][pkmn_id]
-        passed = self.check_pokemon_filter(filters, raid_pkmn, dist, timestr)
+        passed = self.check_pokemon_filter(filters, raid_pkmn, dist, '')
         # If we didn't pass any filters
         if not passed:
             log.debug("Raid {} did not pass pokemon check".format(gym_id))
