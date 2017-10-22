@@ -339,7 +339,7 @@ class Manager(object):
             log.info("Location successfully set to '{},{}'.".format(self.__location[0], self.__location[1]))
 
     # Check if a given pokemon is active on a filter
-    def check_pokemon_filter(self, filters, pkmn, dist):
+    def check_pokemon_filter(self, filters, pkmn, dist, timestr):
         passed = False
 
         cp = pkmn['cp']
@@ -362,8 +362,8 @@ class Manager(object):
             if dist != 'unkn':
                 if filt.check_dist(dist) is False:
                     if self.__quiet is False:
-                        log.info("{} rejected: distance ({:.2f}) was not in range {:.2f} to {:.2f} (F #{})".format(
-                            name, dist, filt.min_dist, filt.max_dist, filt_ct))
+                        log.info("({}) {} rejected: distance ({:.2f}) was not in range {:.2f} to {:.2f} (F #{})".format(
+                            timestr[0], name, dist, filt.min_dist, filt.max_dist, filt_ct))
                     continue
             else:
                 log.debug("Filter dist was not checked because the manager has no location set.")
@@ -372,12 +372,12 @@ class Manager(object):
             if cp != '?':
                 if not filt.check_cp(cp):
                     if self.__quiet is False:
-                        log.info("{} rejected: CP ({}) not in range {} to {} - (F #{})".format(
-                            name, cp, filt.min_cp, filt.max_cp, filt_ct))
+                        log.info("({}) {} rejected: CP ({}) not in range {} to {} - (F #{})".format(
+                            timestr[0], name, cp, filt.min_cp, filt.max_cp, filt_ct))
                     continue
             else:
                 if filt.ignore_missing is True:
-                    log.info("{} rejected: CP information was missing - (F #{})".format(name, filt_ct))
+                    log.info("({}) {} rejected: CP information was missing - (F #{})".format(timestr[0], name, filt_ct))
                     continue
                 log.debug("Pokemon 'cp' was not checked because it was missing.")
 
@@ -390,7 +390,7 @@ class Manager(object):
                     continue
             else:
                 if filt.ignore_missing is True:
-                    log.info("{} rejected: Level information was missing - (F #{})".format(name, filt_ct))
+                    log.info("({}) {} rejected: Level information was missing - (F #{})".format(timestr[0], name, filt_ct))
                     continue
                 log.debug("Pokemon 'level' was not checked because it was missing.")
 
@@ -398,12 +398,12 @@ class Manager(object):
             if iv != '?':
                 if not filt.check_iv(iv):
                     if self.__quiet is False:
-                        log.info("{} rejected: IV percent ({:.2f}) not in range {:.2f} to {:.2f} - (F #{})".format(
-                            name, iv, filt.min_iv, filt.max_iv, filt_ct))
+                        log.info("({}) {} rejected: IV percent ({:.2f}) not in range {:.2f} to {:.2f} - (F #{})".format(
+                            timestr[0], name, iv, filt.min_iv, filt.max_iv, filt_ct))
                     continue
             else:
                 if filt.ignore_missing is True:
-                    log.info("{} rejected: 'IV' information was missing (F #{})".format(name, filt_ct))
+                    log.info("({}) {} rejected: 'IV' information was missing (F #{})".format(timestr[0], name, filt_ct))
                     continue
                 log.debug("Pokemon IV percent was not checked because it was missing.")
 
@@ -556,17 +556,22 @@ class Manager(object):
             return
         self.__pokemon_hist[id_] = pkmn['disappear_time']
 
+        try:
+            timestr = get_time_as_str(pkmn['disappear_time'], self.__timezone)
+        except:
+            timestr = '(xxx xxx)'
+
         # Check the time remaining
         seconds_left = (pkmn['disappear_time'] - datetime.utcnow()).total_seconds()
         if seconds_left < self.__time_limit:
             if self.__quiet is False:
-                log.info("{} ignored: Only {} seconds remaining.".format(name, seconds_left))
+                log.info("({}) {} ignored: Only {} seconds remaining.".format(timestr[0], name, seconds_left))
             return
 
         # Check that the filter is even set
         if pkmn_id not in self.__pokemon_settings['filters']:
             if self.__quiet is False:
-                log.info("{} ignored: no filters are set".format(name))
+                log.info("({}) {} ignored: no filters are set".format(timestr[0], name))
             return
 
         # Extract some useful info that will be used in the filters
@@ -577,7 +582,7 @@ class Manager(object):
         pkmn['pkmn'] = name
 
         filters = self.__pokemon_settings['filters'][pkmn_id]
-        passed = self.check_pokemon_filter(filters, pkmn, dist)
+        passed = self.check_pokemon_filter(filters, pkmn, dist, timestr)
         # If we didn't pass any filters
         if not passed:
             return
@@ -588,7 +593,7 @@ class Manager(object):
         # Check all the geofences
         pkmn['geofence'] = self.check_geofences(name, lat, lng)
         if len(self.__geofences) > 0 and pkmn['geofence'] == 'unknown':
-            log.info("{} rejected: not inside geofence(s)".format(name))
+            log.info("({}) {} rejected: not inside geofence(s)".format(timestr[0], name))
             return
 
         # Finally, add in all the extra crap we waited to calculate until now
@@ -613,7 +618,7 @@ class Manager(object):
             self.__loc_service.add_optional_arguments(self.__location, [lat, lng], pkmn)
 
         if self.__quiet is False:
-            log.info("{} notification has been triggered!".format(name))
+            log.info("({}) {} notification has been triggered!".format(timestr[0], name))
 
         threads = []
         # Spawn notifications in threads so they can work in background
