@@ -109,6 +109,8 @@ def parse_settings(root_path):
     parser = configargparse.ArgParser(default_config_files=config_files)
     parser.add_argument('-cf', '--config', is_config_file=True, help='Configuration file')
     parser.add_argument('-d', '--debug', help='Debug Mode', action='store_true', default=False)
+    parser.add_argument('-ht', '--hidetriggers', help='Hide triggerred messages in console', action='store_true', default=False)
+    parser.add_argument('-hi', '--hideignores' , help='Hide ignored messages in console', action='store_true', default=False)
     parser.add_argument('-H', '--host', help='Set web server listening host', default='127.0.0.1')
     parser.add_argument('-P', '--port', type=int, help='Set web server listening port', default=4000)
     parser.add_argument('-m', '--manager_count', type=int, default=1,
@@ -153,6 +155,8 @@ def parse_settings(root_path):
     config['HOST'] = args.host
     config['PORT'] = args.port
     config['DEBUG'] = args.debug
+    config['HIDEIGNORES' ] = args.hideignores
+    config['HIDETRIGGERS'] = args.hidetriggers
 
     # Check to make sure that the same number of arguements are included
     for list_ in [args.key, args.filters, args.alarms, args.geofences, args.location,
@@ -191,7 +195,8 @@ def parse_settings(root_path):
             timezone=args.timezone[m_ct] if len(args.timezone) > 1 else args.timezone[0],
             time_limit=args.timelimit[m_ct] if len(args.timelimit) > 1 else args.timelimit[0],
             max_attempts=args.max_attempts[m_ct] if len(args.max_attempts) > 1 else args.max_attempts[0],
-            quiet=True,  # TODO: I'll totally document this some day. Promise.
+            hideIgnores=config['HIDEIGNORES'],
+            hideTriggers=config['HIDETRIGGERS'],
             cache_type=args.cache_type[m_ct] if len(args.cache_type) > 1 else args.cache_type[0],
             location=args.location[m_ct] if len(args.location) > 1 else args.location[0],
             filter_file=args.filters[m_ct] if len(args.filters) > 1 else args.filters[0],
