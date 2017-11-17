@@ -140,7 +140,8 @@ def load_egg_section(settings):
     egg = {
         "enabled": bool(parse_boolean(settings.pop('enabled', None)) or False),
         "min_level": int(settings.pop('min_level', 0) or 0),
-        "max_level": int(settings.pop('max_level', 10) or 10)
+        "max_level": int(settings.pop('max_level', 10) or 10),
+        "sponsored_raid": bool(parse_boolean(settings.pop('sponsored_raid', None)) or False)
     }
 
     log.debug("Report eggs between level {} and {}".format(egg['min_level'], egg['max_level']))
@@ -152,7 +153,8 @@ def load_egg_section(settings):
 def load_raid_section(settings):
     log.info("Setting up Raid Filters...")
     raid = {
-        "enabled": bool(parse_boolean(settings.pop('enabled', None)) or False)
+        "enabled": bool(parse_boolean(settings.pop('enabled', None)) or False),
+        "sponsored_raid": bool(parse_boolean(settings.pop('sponsored_raid', None)) or False)
     }
 
     # load any raid pokemon filters

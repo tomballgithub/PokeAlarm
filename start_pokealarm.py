@@ -111,6 +111,8 @@ def parse_settings(root_path):
     parser.add_argument('-d', '--debug', help='Debug Mode', action='store_true', default=False)
     parser.add_argument('-ht', '--hidetriggers', help='Hide triggerred messages in console', action='store_true', default=False)
     parser.add_argument('-hi', '--hideignores' , help='Hide ignored messages in console', action='store_true', default=False)
+    parser.add_argument('-sp', '--sponsored_gyms', type=str, action='append', default=[None],
+                        help='Gym name strings that indicate sponsored gyms.')
     parser.add_argument('-H', '--host', help='Set web server listening host', default='127.0.0.1')
     parser.add_argument('-P', '--port', type=int, help='Set web server listening port', default=4000)
     parser.add_argument('-m', '--manager_count', type=int, default=1,
@@ -157,6 +159,9 @@ def parse_settings(root_path):
     config['DEBUG'] = args.debug
     config['HIDEIGNORES' ] = args.hideignores
     config['HIDETRIGGERS'] = args.hidetriggers
+
+    args.sponsored_gyms.pop(0)
+    config['SPONSORED_GYMS'] = args.sponsored_gyms
 
     # Check to make sure that the same number of arguements are included
     for list_ in [args.key, args.filters, args.alarms, args.geofences, args.location,

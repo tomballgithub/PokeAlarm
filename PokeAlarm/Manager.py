@@ -567,6 +567,13 @@ class Manager(object):
                          .format(egg['id'], level, settings['max_level']))
             return False
 
+        # Check if egg is sponsored
+        gym_name = egg['gym_name'].lower()
+        if (settings['sponsored_raid'] is True and not any(x in gym_name for x in config['SPONSORED_GYMS'])):
+            if self.__hideIgnores is False:
+                log.debug("Egg {} is not at a sponsored gym: ".format(gym_name))
+            return False
+
         return True
 
     # Process new Pokemon data and decide if a notification needs to be sent
@@ -966,6 +973,12 @@ class Manager(object):
             log.info("Raid {} ignored.  Present on local ignore list.".format(gym_id))
 	    return
 #jmk3
+
+        # Check if raid is sponsored
+        gym_name = raid['gym_name'].lower()
+        if (self.__raid_settings['sponsored_raid'] is True and not any(x in gym_name for x in config['SPONSORED_GYMS'])):
+#            if self.__hideIgnores is False:
+                log.debug("Raid {} is not at a sponsored gym: ".format(gym_name))
 
         # Check if raid has been processed
         if self.__cache.get_raid_expiration(gym_id) is not None:
