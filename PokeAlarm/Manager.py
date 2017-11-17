@@ -555,6 +555,13 @@ class Manager(object):
                          .format(egg['id'], level, settings['max_level']))
             return False
 
+        # Check if egg is sponsored
+        gym_name = egg['gym_name'].lower()
+        if (settings['sponsored_raid'] is True and not any(x in gym_name for x in config['SPONSORED_GYMS'])):
+            if self.__hideIgnores is False:
+                log.debug("Egg {} is not at a sponsored gym: ".format(gym_name))
+            return False
+
         return True
 
     # Process new Pokemon data and decide if a notification needs to be sent
@@ -961,6 +968,7 @@ class Manager(object):
 	    return
 #jmk3
 
+<<<<<<< 1d65abc3f398eacd948e7e3b8f53b84fbb88d281
         # raid history will contain the end date and also the pokemon if it has hatched
         if gym_id in self.__raid_hist:
             old_raid_end = self.__raid_hist[gym_id]['raid_end']
@@ -972,6 +980,19 @@ class Manager(object):
                     return
 
         self.__raid_hist[gym_id] = dict(raid_end=raid_end, pkmn_id=pkmn_id)
+=======
+        # Check if raid is sponsored
+        gym_name = raid['gym_name'].lower()
+        if (self.__raid_settings['sponsored_raid'] is True and not any(x in gym_name for x in config['SPONSORED_GYMS'])):
+#            if self.__hideIgnores is False:
+                log.debug("Raid {} is not at a sponsored gym: ".format(gym_name))
+
+        # Check if raid has been processed
+        if self.__cache.get_raid_expiration(gym_id) is not None:
+            if self.__hideIgnores is False:
+                log.info("Raid {} ignored. Was previously processed.".format(gym_id))
+            return
+>>>>>>> Add sponsored raid support
 
         self.__cache.update_raid_expiration(gym_id, raid_end)
         log.info(self.__cache.get_raid_expiration(gym_id))
