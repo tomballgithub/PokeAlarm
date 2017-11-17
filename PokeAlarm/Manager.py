@@ -567,13 +567,6 @@ class Manager(object):
                          .format(egg['id'], level, settings['max_level']))
             return False
 
-        # Check if egg is sponsored
-        gym_name = egg['gym_name'].lower()
-        if (settings['sponsored_raid'] is True and not any(x in gym_name for x in config['SPONSORED_GYMS'])):
-            if self.__hideIgnores is False:
-                log.debug("Egg {} is not at a sponsored gym: ".format(gym_name))
-            return False
-
         return True
 
     # Process new Pokemon data and decide if a notification needs to be sent
@@ -877,11 +870,20 @@ class Manager(object):
             return
 
         gym_id = egg['id']
+        gym_info = self.__cache.get_gym_info(gym_id)
+        gym_name = gym_info['name'].lower()
 
 #jmk3        
+        # Check if egg gym is on the ignore list
         if any(gym_id in x for x in IGNORE_GYM_LIST):
             log.info("Raid {} ignored.  Present on local ignore list.".format(gym_id))
 	    return
+
+        # Check if egg gym should be sponsored and is sponsored
+        if (self.__egg_settings['sponsored_raid'] is True and not any(x in gym_name for x in config['SPONSORED_GYMS'])):
+            log.debug("Egg {} is not at a sponsored gym: ".format(gym_name))
+            return
+
 #jmk3
 
         # Check if egg has been processed yet
@@ -930,7 +932,6 @@ class Manager(object):
 
         # team id saved in self.__gym_hist when processing gym
         team_id = self.__cache.get_gym_team(gym_id)
-        gym_info = self.__cache.get_gym_info(gym_id)
 
         egg.update({
             "gym_name": gym_info['name'],
@@ -964,21 +965,23 @@ class Manager(object):
             return
 
         gym_id = raid['id']
+        gym_info = self.__cache.get_gym_info(gym_id)
+        gym_name = gym_info['name'].lower()
 
         pkmn_id = raid['pkmn_id']
         raid_end = raid['raid_end']
 
 #jmk3        
+        # Check if raid gym is on the ignore list
         if any(gym_id in x for x in IGNORE_GYM_LIST):
             log.info("Raid {} ignored.  Present on local ignore list.".format(gym_id))
 	    return
-#jmk3
 
         # Check if raid is sponsored
-        gym_name = raid['gym_name'].lower()
         if (self.__raid_settings['sponsored_raid'] is True and not any(x in gym_name for x in config['SPONSORED_GYMS'])):
-#            if self.__hideIgnores is False:
-                log.debug("Raid {} is not at a sponsored gym: ".format(gym_name))
+            log.debug("Raid {} is not at a sponsored gym: ".format(gym_name))
+            return
+#jmk3
 
         # Check if raid has been processed
         if self.__cache.get_raid_expiration(gym_id) is not None:
@@ -987,7 +990,6 @@ class Manager(object):
             return
 
         self.__cache.update_raid_expiration(gym_id, raid_end)
-        log.info(self.__cache.get_raid_expiration(gym_id))
         # don't alert about expired raids
         seconds_left = (raid_end - datetime.utcnow()).total_seconds()
         if seconds_left < self.__time_limit:
@@ -1052,7 +1054,6 @@ class Manager(object):
 
         # team id saved in self.__gym_hist when processing gym
         team_id = self.__cache.get_gym_team(gym_id)
-        gym_info = self.__cache.get_gym_info(gym_id)
         form_id = raid_pkmn['form_id']
         form = self.__locale.get_form_name(pkmn_id, form_id)
         min_cp, max_cp = get_pokemon_cp_range(pkmn_id, 20)
