@@ -157,6 +157,8 @@ def parse_settings(root_path):
     config['HOST'] = args.host
     config['PORT'] = args.port
     config['DEBUG'] = args.debug
+    config['HIDEIGNORES' ] = args.hideignores
+    config['HIDETRIGGERS'] = args.hidetriggers
 
     args.sponsored_gyms.pop(0)
     config['SPONSORED_GYMS'] = args.sponsored_gyms
@@ -198,7 +200,8 @@ def parse_settings(root_path):
             timezone=args.timezone[m_ct] if len(args.timezone) > 1 else args.timezone[0],
             time_limit=args.timelimit[m_ct] if len(args.timelimit) > 1 else args.timelimit[0],
             max_attempts=args.max_attempts[m_ct] if len(args.max_attempts) > 1 else args.max_attempts[0],
-            quiet=False,  # TODO: I'll totally document this some day. Promise.
+            hideIgnores=config['HIDEIGNORES'],
+            hideTriggers=config['HIDETRIGGERS'],
             cache_type=args.cache_type[m_ct] if len(args.cache_type) > 1 else args.cache_type[0],
             location=args.location[m_ct] if len(args.location) > 1 else args.location[0],
             filter_file=args.filters[m_ct] if len(args.filters) > 1 else args.filters[0],

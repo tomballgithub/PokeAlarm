@@ -29,7 +29,7 @@ execfile("/root/pokemon/inaccessible_gyms.txt")
 #jmk3
 
 class Manager(object):
-    def __init__(self, name, google_key, locale, units, timezone, time_limit, max_attempts, location, quiet, cache_type,
+    def __init__(self, name, google_key, locale, units, timezone, time_limit, max_attempts, location, hideIgnores, hideTriggers, cache_type,
                  filter_file, geofence_file, alarm_file, debug):
         # Set the name of the Manager
         self.__name = str(name).lower()
@@ -58,7 +58,8 @@ class Manager(object):
             log.warning("NO LOCATION SET - this may cause issues with distance related DTS.")
 
         # Quiet mode
-        self.__quiet = quiet
+        self.__hideIgnores = hideIgnores
+        self.__hideTriggers = hideTriggers
 
         # Create cache
         self.__cache = cache_factory(cache_type, self.__name)
@@ -380,7 +381,7 @@ class Manager(object):
             # Check the distance from the set location
             if dist != 'unkn':
                 if filt.check_dist(dist) is False:
-                    if self.__quiet is False:
+                    if self.__hideIgnores is False:
                         log.info("({}) {} rejected: distance ({:.2f}) was not in range {:.2f} to {:.2f} (F #{})".format(
                             timestr[0], name, dist, filt.min_dist, filt.max_dist, filt_ct))
                     continue
@@ -390,145 +391,156 @@ class Manager(object):
             # Check the CP of the Pokemon
             if cp != '?':
                 if not filt.check_cp(cp):
-                    if self.__quiet is False:
+                    if self.__hideIgnores is False:
                         log.info("({}) {} rejected: CP ({}) not in range {} to {} - (F #{})".format(
                             timestr[0], name, cp, filt.min_cp, filt.max_cp, filt_ct))
                     continue
             else:
                 if (filt.ignore_missing is True) and (filt.min_cp > 0): # JMK
-                    log.info("({}) {} rejected: CP information was missing - (F #{})".format(timestr[0], name, filt_ct))
+                    if self.__hideIgnores is False:
+                        log.info("({}) {} rejected: CP information was missing - (F #{})".format(timestr[0], name, filt_ct))
                     continue
                 log.debug("Pokemon 'cp' was not checked because it was missing.")
 
             # Check the Level of the Pokemon
             if level != '?':
                 if not filt.check_level(level):
-                    if self.__quiet is False:
+                    if self.__hideIgnores is False:
                         log.info("{} rejected: Level ({}) not in range {} to {} - (F #{})".format(
                             name, level, filt.min_level, filt.max_level, filt_ct))
                     continue
             else:
                 if (filt.ignore_missing is True) and (filt.min_level > 0): # JMK
-                    log.info("({}) {} rejected: Level information was missing - (F #{})".format(timestr[0], name, filt_ct))
+                    if self.__hideIgnores is False:
+                        log.info("({}) {} rejected: Level information was missing - (F #{})".format(timestr[0], name, filt_ct))
                     continue
                 log.debug("Pokemon 'level' was not checked because it was missing.")
 
             # Check the IV percent of the Pokemon
             if iv != '?':
                 if not filt.check_iv(iv):
-                    if self.__quiet is False:
+                    if self.__hideIgnores is False:
                         log.info("({}) {} rejected: IV percent ({:.2f}) not in range {:.2f} to {:.2f} - (F #{})".format(
                             timestr[0], name, iv, filt.min_iv, filt.max_iv, filt_ct))
                     continue
             else:
                 if (filt.ignore_missing is True) and ((filt.min_iv > 0) or (filt.min_iv == 0)): # JMK
-                    log.info("({}) {} rejected: 'IV' information was missing (F #{})".format(timestr[0], name, filt_ct))
+                    if self.__hideIgnores is False:
+                        log.info("({}) {} rejected: 'IV' information was missing (F #{})".format(timestr[0], name, filt_ct))
                     continue
                 log.debug("Pokemon IV percent was not checked because it was missing.")
 
             # Check the Attack IV of the Pokemon
             if atk != '?':
                 if not filt.check_atk(atk):
-                    if self.__quiet is False:
+                    if self.__hideIgnores is False:
                         log.info("{} rejected: Attack IV ({}) not in range {} to {} - (F #{})".format(
                             name, atk, filt.min_atk, filt.max_atk, filt_ct))
                     continue
             else:
 #JMK                if filt.ignore_missing is True:
-#JMK                    log.info("{} rejected: Attack IV information was missing - (F #{})".format(name, filt_ct))
+#JMK                    if self.__hideIgnores is False:
+#JMK                        log.info("{} rejected: Attack IV information was missing - (F #{})".format(name, filt_ct))
 #JMK                    continue
                 log.debug("Pokemon 'atk' was not checked because it was missing.")
 
             # Check the Defense IV of the Pokemon
             if def_ != '?':
                 if not filt.check_def(def_):
-                    if self.__quiet is False:
+                    if self.__hideIgnores is False:
                         log.info("{} rejected: Defense IV ({}) not in range {} to {} - (F #{})".format(
                             name, def_, filt.min_atk, filt.max_atk, filt_ct))
                     continue
             else:
 #JMK                if filt.ignore_missing is True:
-#JMK                    log.info("{} rejected: Defense IV information was missing - (F #{})".format(name, filt_ct))
+#JMK                    if self.__hideIgnores is False:
+#JMK                        log.info("{} rejected: Defense IV information was missing - (F #{})".format(name, filt_ct))
 #JMK                    continue
                 log.debug("Pokemon 'def' was not checked because it was missing.")
 
             # Check the Stamina IV of the Pokemon
             if sta != '?':
                 if not filt.check_sta(sta):
-                    if self.__quiet is False:
+                    if self.__hideIgnores is False:
                         log.info("{} rejected: Stamina IV ({}) not in range {} to {} - (F #{}).".format(
                             name, sta, filt.min_sta, filt.max_sta, filt_ct))
                     continue
             else:
 #JMK                if filt.ignore_missing is True:
-#JMK                    log.info("{} rejected: Stamina IV information was missing - (F #{})".format(name, filt_ct))
+#JMK                    if self.__hideIgnores is False:
+#JMK                       log.info("{} rejected: Stamina IV information was missing - (F #{})".format(name, filt_ct))
 #JMK                    continue
                 log.debug("Pokemon 'sta' was not checked because it was missing.")
 
             # Check the Quick Move of the Pokemon
             if quick_id != '?':
                 if not filt.check_quick_move(quick_id):
-                    if self.__quiet is False:
+                    if self.__hideIgnores is False:
                         log.info("{} rejected: Quick move was not correct - (F #{})".format(name, filt_ct))
                     continue
             else:
 #JMK                if filt.ignore_missing is True:
-#JMK                    log.info("{} rejected: Quick move information was missing - (F #{})".format(name, filt_ct))
+#JMK                    if self.__hideIgnores is False:
+#JMK                       log.info("{} rejected: Quick move information was missing - (F #{})".format(name, filt_ct))
 #JMK                    continue
                 log.debug("Pokemon 'quick_id' was not checked because it was missing.")
 
             # Check the Quick Move of the Pokemon
             if charge_id != '?':
                 if not filt.check_charge_move(charge_id):
-                    if self.__quiet is False:
+                    if self.__hideIgnores is False:
                         log.info("{} rejected: Charge move was not correct - (F #{})".format(name, filt_ct))
                     continue
             else:
 #JMK                if filt.ignore_missing is True:
-#JMK                    log.info("{} rejected: Charge move information was missing - (F #{})".format(name, filt_ct))
+#JMK                    if self.__hideIgnores is False:
+#JMK                        log.info("{} rejected: Charge move information was missing - (F #{})".format(name, filt_ct))
 #JMK                    continue
                 log.debug("Pokemon 'charge_id' was not checked because it was missing.")
 
             # Check for a correct move combo
             if quick_id != '?' and charge_id != '?':
                 if not filt.check_moveset(quick_id, charge_id):
-                    if self.__quiet is False:
+                    if self.__hideIgnores is False:
                         log.info("{} rejected: Moveset was not correct - (F #{})".format(name, filt_ct))
                     continue
             else:  # This will probably never happen? but just to be safe...
 #JMK                if filt.ignore_missing is True:
-#JMK                    log.info("{} rejected: Moveset information was missing - (F #{})".format(name, filt_ct))
+#JMK                    if self.__hideIgnores is False:
+#JMK                       log.info("{} rejected: Moveset information was missing - (F #{})".format(name, filt_ct))
 #JMK                    continue
                 log.debug("Pokemon 'moveset' was not checked because it was missing.")
 
             # Check for a valid size
             if size != 'unknown':
                 if not filt.check_size(size):
-                    if self.__quiet is False:
+                    if self.__hideIgnores is False:
                         log.info("{} rejected: Size ({}) was not correct - (F #{})".format(name, size, filt_ct))
                     continue
             else:
 #JMK                if filt.ignore_missing is True:
-#JMK                    log.info("{} rejected: Size information was missing - (F #{})".format(name, filt_ct))
+#JMK                    if self.__hideIgnores is False:
+#JMK                        log.info("{} rejected: Size information was missing - (F #{})".format(name, filt_ct))
 #JMK                    continue
                 log.debug("Pokemon 'size' was not checked because it was missing.")
 
             # Check for a valid gender
             if gender != 'unknown':
                 if not filt.check_gender(gender):
-                    if self.__quiet is False:
+                    if self.__hideIgnores is False:
                         log.info("{} rejected: Gender ({}) was not correct - (F #{})".format(name, gender, filt_ct))
                     continue
             else:
 #JMK                if filt.ignore_missing is True:
-#JMK                    log.info("{} rejected: Gender information was missing - (F #{})".format(name, filt_ct))
+#JMK                    if self.__hideIgnores is False:
+#JMK                        log.info("{} rejected: Gender information was missing - (F #{})".format(name, filt_ct))
 #JMK                    continue
                 log.debug("Pokemon 'gender' was not checked because it was missing.")
 
             # Check for a valid form
             if form_id != '?':
                 if not filt.check_form(form_id):
-                    if self.__quiet is False:
+                    if self.__hideIgnores is False:
                         log.info("{} rejected: Form ({}) was not correct - (F #{})".format(name, form_id, filt_ct))
                     continue
 
@@ -544,13 +556,13 @@ class Manager(object):
         level = egg['raid_level']
 
         if level < settings['min_level']:
-            if self.__quiet is False:
+            if self.__hideIgnores is False:
                 log.info("Egg {} is less ({}) than min ({}) level, ignore"
                          .format(egg['id'], level, settings['min_level']))
             return False
 
         if level > settings['max_level']:
-            if self.__quiet is False:
+            if self.__hideIgnores is False:
                 log.info("Egg {} is higher ({}) than max ({}) level, ignore"
                          .format(egg['id'], level, settings['max_level']))
             return False
@@ -583,13 +595,13 @@ class Manager(object):
         # Check the time remaining
         seconds_left = (pkmn['disappear_time'] - datetime.utcnow()).total_seconds()
         if seconds_left < self.__time_limit:
-            if self.__quiet is False:
+            if self.__hideIgnores is False:
                 log.info("({}) {} ignored: Only {} seconds remaining.".format(timestr[0], name, seconds_left))
             return
 
         # Check that the filter is even set
         if pkmn_id not in self.__pokemon_settings['filters']:
-            if self.__quiet is False:
+            if self.__hideIgnores is False:
                 log.info("({}) {} ignored: no filters are set".format(timestr[0], name))
             return
 
@@ -612,7 +624,8 @@ class Manager(object):
         # Check all the geofences
         pkmn['geofence'] = self.check_geofences(name, lat, lng)
         if len(self.__geofences) > 0 and pkmn['geofence'] == 'unknown':
-            log.info("({}) {} rejected: not inside geofence(s)".format(timestr[0], name))
+            if self.__hideIgnores is False:
+                log.info("({}) {} rejected: not inside geofence(s)".format(timestr[0], name))
             return
 
         # Finally, add in all the extra crap we waited to calculate until now
@@ -641,7 +654,7 @@ class Manager(object):
         if self.__loc_service:
             self.__loc_service.add_optional_arguments(self.__location, [lat, lng], pkmn)
 
-        if self.__quiet is False:
+        if self.__hideTriggers is False:
             log.info("({}) {} notification has been triggered!".format(timestr[0], name))
 
         threads = []
@@ -670,7 +683,7 @@ class Manager(object):
         # Check the time remaining
         seconds_left = (stop['expire_time'] - datetime.utcnow()).total_seconds()
         if seconds_left < self.__time_limit:
-            if self.__quiet is False:
+            if self.__hideIgnores is False:
                 log.info("Pokestop ({}) ignored: only {} seconds remaining.".format(stop_id, seconds_left))
             return
 
@@ -684,7 +697,7 @@ class Manager(object):
             # Check the distance from the set location
             if dist != 'unkn':
                 if filt.check_dist(dist) is False:
-                    if self.__quiet is False:
+                    if self.__hideIgnores is False:
                         log.info("Pokestop rejected: distance ({:.2f}) was not in range".format(dist) +
                                  " {:.2f} to {:.2f} (F #{})".format(filt.min_dist, filt.max_dist, filt_ct))
                     continue
@@ -702,7 +715,8 @@ class Manager(object):
         # Check the geofences
         stop['geofence'] = self.check_geofences('Pokestop', lat, lng)
         if len(self.__geofences) > 0 and stop['geofence'] == 'unknown':
-            log.info("Pokestop rejected: not within any specified geofence")
+            if self.__hideIgnores is False:
+                log.info("Pokestop rejected: not within any specified geofence")
             return
 
         time_str = get_time_as_str(stop['expire_time'], self.__timezone)
@@ -716,7 +730,7 @@ class Manager(object):
         if self.__loc_service:
             self.__loc_service.add_optional_arguments(self.__location, [lat, lng], stop)
 
-        if self.__quiet is False:
+        if self.__hideTriggers is False:
             log.info("Pokestop ({}) notification has been triggered!".format(stop_id))
 
         threads = []
@@ -774,7 +788,7 @@ class Manager(object):
             # Check the distance from the set location
             if dist != 'unkn':
                 if filt.check_dist(dist) is False:
-                    if self.__quiet is False:
+                    if self.__hideIgnores is False:
                         log.info("Gym rejected: distance ({:.2f}) was not in range" +
                                  " {:.2f} to {:.2f} (F #{})".format(dist, filt.min_dist, filt.max_dist, filt_ct))
                     continue
@@ -783,12 +797,12 @@ class Manager(object):
 
             # Check the old team
             if filt.check_from_team(from_team_id) is False:
-                if self.__quiet is False:
+                if self.__hideIgnores is False:
                     log.info("Gym rejected: {} as old team is not correct (F #{})".format(old_team, filt_ct))
                 continue
             # Check the new team
             if filt.check_to_team(to_team_id) is False:
-                if self.__quiet is False:
+                if self.__hideIgnores is False:
                     log.info("Gym rejected: {} as current team is not correct (F #{})".format(cur_team, filt_ct))
                 continue
 
@@ -803,7 +817,8 @@ class Manager(object):
         # Check the geofences
         gym['geofence'] = self.check_geofences('Gym', lat, lng)
         if len(self.__geofences) > 0 and gym['geofence'] == 'unknown':
-            log.info("Gym rejected: not inside geofence(s)")
+            if self.__hideIgnores is False:
+                log.info("Gym rejected: not inside geofence(s)")
             return
 
         # Check if in geofences
@@ -812,7 +827,7 @@ class Manager(object):
             for gf in self.__geofences:
                 inside |= gf.contains(lat, lng)
             if inside is False:
-                if self.__quiet is False:
+                if self.__hideIgnores is False:
                     log.info("Gym update ignored: located outside geofences.")
                 return
         else:
@@ -836,7 +851,7 @@ class Manager(object):
         if self.__loc_service:
             self.__loc_service.add_optional_arguments(self.__location, [lat, lng], gym)
 
-        if self.__quiet is False:
+        if self.__hideTriggers is False:
             log.info("Gym ({}) notification has been triggered!".format(gym_id))
 
         threads = []
@@ -872,17 +887,9 @@ class Manager(object):
 
 #jmk3
 
-        # raid history will contains any raid processed
-        if gym_id in self.__raid_hist:
-            old_raid_end = self.__raid_hist[gym_id]['raid_end']
-            if old_raid_end == raid_end:
-                if self.__quiet is False:
-                    log.info("Raid {} ignored. Was previously processed.".format(gym_id))
-                return
-
         # Check if egg has been processed yet
         if self.__cache.get_egg_expiration(gym_id) is not None:
-            if self.__quiet is False:
+            if self.__hideIgnores is False:
                 log.info("Egg {} ignored - previously processed.".format(gym_id))
             return
 
@@ -892,7 +899,7 @@ class Manager(object):
         # don't alert about (nearly) hatched eggs
         seconds_left = (egg['raid_begin'] - datetime.utcnow()).total_seconds()
         if seconds_left < self.__time_limit:
-            if self.__quiet is False:
+            if self.__hideIgnores is False:
                 log.info("Egg {} ignored. Egg hatch in {} seconds".format(gym_id, seconds_left))
             return
 
@@ -902,7 +909,7 @@ class Manager(object):
         # Check if raid is in geofences
         egg['geofence'] = self.check_geofences('Raid', lat, lng)
         if len(self.__geofences) > 0 and egg['geofence'] == 'unknown':
-            if self.__quiet is False:
+            if self.__hideIgnores is False:
                 log.info("Egg {} ignored: located outside geofences.".format(gym_id))
             return
         else:
@@ -972,7 +979,7 @@ class Manager(object):
         # Check if raid gym is on the ignore list
         if any(gym_id in x for x in IGNORE_GYM_LIST):
             log.info("Raid {} ignored.  Present on local ignore list.".format(gym_id))
-	    return
+            return
 
         # Check if raid is sponsored
         if (self.__raid_settings['sponsored_raid'] is True and not any(x in gym_name for x in config['SPONSORED_GYMS'])):
@@ -980,23 +987,17 @@ class Manager(object):
             return
 #jmk3
 
-        # raid history will contain the end date and also the pokemon if it has hatched
-        if gym_id in self.__raid_hist:
-            old_raid_end = self.__raid_hist[gym_id]['raid_end']
-            old_raid_pkmn = self.__raid_hist[gym_id].get('pkmn_id', 0)
-            if old_raid_end == raid_end:
-                if old_raid_pkmn == pkmn_id:  # raid with same end time exists and it has same pokemon id, skip it
-                    if self.__quiet is False:
-                        log.info("Raid {} ignored. Was previously processed.".format(gym_id))
-                    return
-
-        self.__raid_hist[gym_id] = dict(raid_end=raid_end, pkmn_id=pkmn_id)
+        # Check if raid has been processed
+        if self.__cache.get_raid_expiration(gym_id) is not None:
+            if self.__hideIgnores is False:
+                log.info("Raid {} ignored. Was previously processed.".format(gym_id))
+            return
 
         self.__cache.update_raid_expiration(gym_id, raid_end)
         # don't alert about expired raids
         seconds_left = (raid_end - datetime.utcnow()).total_seconds()
         if seconds_left < self.__time_limit:
-            if self.__quiet is False:
+            if self.__hideIgnores is False:
                 log.info("Raid {} ignored. Only {} seconds left.".format(gym_id, seconds_left))
             return
 
@@ -1006,7 +1007,7 @@ class Manager(object):
         # Check if raid is in geofences
         raid['geofence'] = self.check_geofences('Raid', lat, lng)
         if len(self.__geofences) > 0 and raid['geofence'] == 'unknown':
-            if self.__quiet is False:
+            if self.__hideIgnores is False:
                 log.info("Raid {} ignored: located outside geofences.".format(gym_id))
             return
         else:
@@ -1019,7 +1020,7 @@ class Manager(object):
         name = self.__locale.get_pokemon_name(pkmn_id)
 
         if pkmn_id not in self.__raid_settings['filters']:
-            if self.__quiet is False:
+            if self.__hideIgnores is False:
                 log.info("Raid on {} ignored: no filters are set".format(name))
             return
 
