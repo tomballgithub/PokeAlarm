@@ -861,7 +861,8 @@ class Manager(object):
 #jmk3        
         # Check if egg gym is on the ignore list
         if any(gym_id in x for x in IGNORE_GYM_LIST):
-            log.info("Raid {} ignored.  Present on local ignore list.".format(gym_id))
+            if self.__hideIgnores is False:
+                log.info("Raid {} ignored.  Present on local ignore list.".format(gym_id))
 	    return
 
         # Check if egg gym should be sponsored and is sponsored
@@ -917,8 +918,11 @@ class Manager(object):
         if self.__loc_service:
             self.__loc_service.add_optional_arguments(self.__location, [lat, lng], egg)
 
-        if self.__quiet is False:
-            log.info("Egg ({}) notification has been triggered!".format(gym_id))
+        if self.__hideTriggers is False:
+            if (self.__egg_settings['sponsored_raid'] is True):
+                log.info("Sponsored Egg ({}) notification has been triggered!".format(gym_id))
+            else:
+                log.info("Egg ({}) notification has been triggered!".format(gym_id))
 
         time_str = get_time_as_str(egg['raid_end'], self.__timezone)
         start_time_str = get_time_as_str(egg['raid_begin'], self.__timezone)
@@ -1045,9 +1049,12 @@ class Manager(object):
         if self.__loc_service:
             self.__loc_service.add_optional_arguments(self.__location, [lat, lng], raid)
 
-        if self.__quiet is False:
-            log.info("Raid ({}) notification has been triggered!".format(gym_id))
-
+        if self.__hideTriggers is False:
+            if (self.__raid_settings['sponsored_raid'] is True):
+                log.info("Sponsored Raid ({}) notification has been triggered!".format(gym_id))
+            else:
+                log.info("Raid ({}) notification has been triggered!".format(gym_id))
+            
         time_str = get_time_as_str(raid['raid_end'], self.__timezone)
         start_time_str = get_time_as_str(raid['raid_begin'], self.__timezone)
 
