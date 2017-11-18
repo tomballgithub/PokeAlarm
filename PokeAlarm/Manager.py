@@ -878,7 +878,7 @@ class Manager(object):
         if any(gym_id in x for x in IGNORE_GYM_LIST):
             if self.__hideIgnores is False:
                 log.info("Raid {} ignored.  Present on local ignore list.".format(gym_id))
-	    return
+            return
 
         # Check if egg gym should be sponsored and is sponsored
         if (self.__egg_settings['sponsored_raid'] is True and not any(x in gym_name for x in config['SPONSORED_GYMS'])):
@@ -978,7 +978,8 @@ class Manager(object):
 #jmk3        
         # Check if raid gym is on the ignore list
         if any(gym_id in x for x in IGNORE_GYM_LIST):
-            log.info("Raid {} ignored.  Present on local ignore list.".format(gym_id))
+            if self.__hideIgnores is False:
+                log.info("Raid {} ignored.  Present on local ignore list.".format(gym_id))
             return
 
         # Check if raid is sponsored
