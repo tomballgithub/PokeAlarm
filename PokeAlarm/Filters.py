@@ -141,8 +141,12 @@ def load_egg_section(settings):
         "enabled": bool(parse_boolean(settings.pop('enabled', None)) or False),
         "min_level": int(settings.pop('min_level', 0) or 0),
         "max_level": int(settings.pop('max_level', 10) or 10),
-        "sponsored_raid": bool(parse_boolean(settings.pop('sponsored_raid', None)) or False)
+        "contains": settings.pop('gymname_contains', [])
     }
+
+    if not isinstance(egg['contains'], list):
+            log.error("'gymname_contains' filter must be a list")
+            sys.exit(1)
 
     log.debug("Report eggs between level {} and {}".format(egg['min_level'], egg['max_level']))
 
@@ -154,8 +158,12 @@ def load_raid_section(settings):
     log.info("Setting up Raid Filters...")
     raid = {
         "enabled": bool(parse_boolean(settings.pop('enabled', None)) or False),
-        "sponsored_raid": bool(parse_boolean(settings.pop('sponsored_raid', None)) or False)
+        "contains": settings.pop('gymname_contains', [])
     }
+
+    if not isinstance(raid['contains'], list):
+            log.error("'gymname_contains' filter must be a list")
+            sys.exit(1)
 
     # load any raid pokemon filters
     filters = load_pokemon_filters(settings)

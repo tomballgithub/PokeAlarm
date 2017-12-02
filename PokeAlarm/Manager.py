@@ -871,21 +871,6 @@ class Manager(object):
 
         gym_id = egg['id']
         gym_info = self.__cache.get_gym_info(gym_id)
-        gym_name = gym_info['name'].lower()
-
-#jmk3        
-        # Check if egg gym is on the ignore list
-        if any(gym_id in x for x in IGNORE_GYM_LIST):
-            if self.__hideIgnores is False:
-                log.info("Raid {} ignored.  Present on local ignore list.".format(gym_id))
-            return
-
-        # Check if egg gym should be sponsored and is sponsored
-        if (self.__egg_settings['sponsored_raid'] is True and not any(x in gym_name for x in config['SPONSORED_GYMS'])):
-            log.debug("Egg {} is not at a sponsored gym: ".format(gym_name))
-            return
-
-#jmk3
 
         # Check if egg has been processed yet
         if self.__cache.get_egg_expiration(gym_id) is not None:
@@ -905,6 +890,18 @@ class Manager(object):
 
         lat, lng = egg['lat'], egg['lng']
         dist = get_earth_dist([lat, lng], self.__location)
+
+        # Check if egg gym filter has a contains field and if so check it
+        log.info("Checking Egg:  Gym Name '{}'".format(gym_info['name'].lower()))
+        log.info("Checking Egg:  Gym Info '{}'".format(gym_info))
+        log.info("Checking Egg:  Contains Check '{}'".format(self.__egg_settings['contains']))
+        if len(self.__egg_settings['contains']) > 0:
+            if not any(x in gym_info['name'].lower()
+                       for x in self.__egg_settings['contains']):
+                log.info("Egg {} ignored: gym name did not match the "
+                         "gymname_contains "
+                         "filter.".format(gym_id))
+                return
 
         # Check if raid is in geofences
         egg['geofence'] = self.check_geofences('Raid', lat, lng)
@@ -926,9 +923,6 @@ class Manager(object):
             self.__loc_service.add_optional_arguments(self.__location, [lat, lng], egg)
 
         if self.__hideTriggers is False:
-            if (self.__egg_settings['sponsored_raid'] is True):
-                log.info("Sponsored Egg ({}) notification has been triggered!".format(gym_id))
-            else:
                 log.info("Egg ({}) notification has been triggered!".format(gym_id))
 
         time_str = get_time_as_str(egg['raid_end'], self.__timezone)
@@ -975,19 +969,6 @@ class Manager(object):
         pkmn_id = raid['pkmn_id']
         raid_end = raid['raid_end']
 
-#jmk3        
-        # Check if raid gym is on the ignore list
-        if any(gym_id in x for x in IGNORE_GYM_LIST):
-            if self.__hideIgnores is False:
-                log.info("Raid {} ignored.  Present on local ignore list.".format(gym_id))
-            return
-
-        # Check if raid is sponsored
-        if (self.__raid_settings['sponsored_raid'] is True and not any(x in gym_name for x in config['SPONSORED_GYMS'])):
-            log.debug("Raid {} is not at a sponsored gym: ".format(gym_name))
-            return
-#jmk3
-
         # Check if raid has been processed
         if self.__cache.get_raid_expiration(gym_id) is not None:
             if self.__hideIgnores is False:
@@ -1004,6 +985,18 @@ class Manager(object):
 
         lat, lng = raid['lat'], raid['lng']
         dist = get_earth_dist([lat, lng], self.__location)
+
+        # Check if raid gym filter has a contains field and if so check it
+        log.info("Checking Raid:  Gym Name '{}'".format(gym_info['name'].lower()))
+        log.info("Checking Raid:  Gym Info '{}'".format(gym_info))
+        log.info("Checking Raid:  Contains Check '{}'".format(self.__egg_settings['contains']))
+        if len(self.__raid_settings['contains']) > 0:
+            if not any(x in gym_info['name'].lower()
+                       for x in self.__raid_settings['contains']):
+                log.info("Raid {} ignored: gym name did not match the "
+                         "gymname_contains "
+                         "filter.".format(gym_id))
+                return
 
         # Check if raid is in geofences
         raid['geofence'] = self.check_geofences('Raid', lat, lng)
@@ -1052,9 +1045,6 @@ class Manager(object):
             self.__loc_service.add_optional_arguments(self.__location, [lat, lng], raid)
 
         if self.__hideTriggers is False:
-            if (self.__raid_settings['sponsored_raid'] is True):
-                log.info("Sponsored Raid ({}) notification has been triggered!".format(gym_id))
-            else:
                 log.info("Raid ({}) notification has been triggered!".format(gym_id))
             
         time_str = get_time_as_str(raid['raid_end'], self.__timezone)
