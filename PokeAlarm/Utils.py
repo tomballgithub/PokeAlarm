@@ -9,6 +9,7 @@ import os
 import sys
 # 3rd Party Imports
 # Local Imports
+from PokeAlarm import not_so_secret_url
 from . import config
 
 log = logging.getLogger('Utils')
@@ -390,7 +391,6 @@ def get_time_as_str(t, timezone=None):
 
 
 # Return the default url for images and stuff
-def get_image_url(image):
-    return "https://raw.githubusercontent.com/not4profit/images/master/" + image
-
+def get_image_url(suffix):
+    return not_so_secret_url + suffix
 ########################################################################################################################

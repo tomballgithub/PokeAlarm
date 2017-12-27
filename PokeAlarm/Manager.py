@@ -647,7 +647,7 @@ class Manager(object):
             'iv_2': "{:.2f}".format(iv) if iv != '?' else '?',
             'quick_move': self.__locale.get_move_name(quick_id),
             'charge_move': self.__locale.get_move_name(charge_id),
-            'form_id_or_empty': '' if form_id == '?' else '{:03}'.format(form_id),
+            'form_id_or_empty': '000' if form_id == '?' else '{:03}'.format(form_id),
             'form': form,
             'form_or_empty': '' if form == 'unknown' else form
         })
