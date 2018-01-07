@@ -60,8 +60,8 @@ class DiscordAlarm(Alarm):
             'username': "Raid",
             'content': "",
             'icon_url': get_image_url("monsters/<pkmn_id_3>_<form_id_or_empty>.png"),
-            'avatar_url': get_image_url("eggs/<raid_level>.png"),
-            'title': "Level <raid_level> Raid is available against <pkmn>!",
+            'icon_url': get_image_url("monsters/<pkmn_id_3>_<form_id_or_empty>.png"),
+            'avatar_url': get_image_url("monsters/<pkmn_id_3>_<form_id_or_empty>.png"),
             'url': "<gmaps>",
             'body': "The raid is available until <24h_time> (<time_left>)."
         }

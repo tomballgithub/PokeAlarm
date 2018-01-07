@@ -872,6 +872,12 @@ class Manager(object):
         gym_id = egg['id']
         gym_info = self.__cache.get_gym_info(gym_id)
 
+#jmk3        
+        if any(gym_id in x for x in IGNORE_GYM_LIST):
+            log.info("Raid {} ignored.  Present on local ignore list.".format(gym_id))
+            return
+#jmk3
+
         # Check if egg has been processed yet
         if self.__cache.get_egg_expiration(gym_id) is not None:
             if self.__hideIgnores is False:
@@ -969,6 +975,12 @@ class Manager(object):
 
         pkmn_id = raid['pkmn_id']
         raid_end = raid['raid_end']
+
+#jmk3        
+        if any(gym_id in x for x in IGNORE_GYM_LIST):
+            log.info("Raid {} ignored.  Present on local ignore list.".format(gym_id))
+            return
+#jmk3
 
         # Check if raid has been processed
         if self.__cache.get_raid_expiration(gym_id) is not None:
