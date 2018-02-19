@@ -4,6 +4,7 @@ import json
 # 3rd Party Imports
 # Local Imports
 from PokeAlarm import Unknown
+from PokeAlarm import config
 
 log = logging.getLogger('Filter')
 
@@ -50,7 +51,8 @@ class BaseFilter(object):
 
     def reject(self, event, reason):
         """ Log the reason for rejecting the Event. """
-        log.info("[%10s] %s rejected: %s", self._name, event.name, reason)
+        if config['HIDEIGNORES'] is False:
+            log.info("[%10s] %s rejected: %s", self._name, event.name, reason)
 
     def evaluate_attribute(self, limit, eval_func, event_attribute):
         """ Evaluates a parameter and generate a check if needed. """

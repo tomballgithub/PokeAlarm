@@ -123,6 +123,8 @@ def parse_settings(root_path):
         '-cf', '--config', is_config_file=True, help='Configuration file')
     parser.add_argument(
         '-d', '--debug', help='Debug Mode', action='store_true', default=False)
+    parser.add_argument('-ht', '--hidetriggers', help='Hide triggerred messages in console', action='store_true', default=False)
+    parser.add_argument('-hi', '--hideignores' , help='Hide ignored messages in console', action='store_true', default=False)
     parser.add_argument(
         '-H', '--host', help='Set web server listening host',
         default='127.0.0.1')
@@ -199,6 +201,8 @@ def parse_settings(root_path):
     config['PORT'] = args.port
     config['CONCURRENCY'] = args.concurrency
     config['DEBUG'] = args.debug
+    config['HIDEIGNORES' ] = args.hideignores
+    config['HIDETRIGGERS'] = args.hidetriggers
 
     # Check to make sure that the same number of arguments are included
     for arg in [args.key, args.filters, args.alarms, args.rules,
@@ -256,7 +260,9 @@ def parse_settings(root_path):
             geofence_file=get_from_list(
                 args.geofences, m_ct, args.geofences[0]),
             alarm_file=get_from_list(args.alarms, m_ct, args.alarms[0]),
-            debug=config['DEBUG']
+            debug=config['DEBUG'],
+            hideIgnores=config['HIDEIGNORES'],
+            hideTriggers=config['HIDETRIGGERS']
         )
         parse_rules_file(m, get_from_list(args.rules, m_ct, args.rules[0]))
         if m.get_name() not in managers:

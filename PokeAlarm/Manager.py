@@ -21,7 +21,7 @@ from Cache import cache_factory
 from Geofence import load_geofence_file
 from Locale import Locale
 from LocationServices import location_service_factory
-from Utils import (get_earth_dist, get_path, require_and_remove_key,
+from Utils import (get_earth_dist, get_path, require_and_remove_key, get_time_as_str,
                    parse_boolean, contains_arg, get_cardinal_dir)
 from . import config
 Rule = namedtuple('Rule', ['filter_names', 'alarm_names'])
@@ -32,7 +32,7 @@ log = logging.getLogger('Manager')
 class Manager(object):
     def __init__(self, name, google_key, locale, units, timezone, time_limit,
                  max_attempts, location, quiet, cache_type, filter_file,
-                 geofence_file, alarm_file, debug):
+                 geofence_file, alarm_file, debug, hideIgnores, hideTriggers):
         # Set the name of the Manager
         self.__name = str(name).lower()
         log.info("----------- Manager '{}' ".format(self.__name)
@@ -65,6 +65,8 @@ class Manager(object):
 
         # Quiet mode
         self.__quiet = quiet
+        self.__hideIgnores = hideIgnores
+        self.__hideTriggers = hideTriggers
 
         # Create cache
         self.__cache = cache_factory(cache_type, self.__name)
@@ -538,8 +540,8 @@ class Manager(object):
 
         # Skip if previously processed
         if self.__cache.get_pokemon_expiration(mon.enc_id) is not None:
-            log.debug("{} monster was skipped because it was previously "
-                      "processed.".format(mon.name))
+            log.debug("({}) {} monster was skipped because it was previously "
+                      "processed.".format(get_time_as_str(mon.disappear_time, self.__timezone)[0], mon.name))
             return
         self.__cache.update_pokemon_expiration(
             mon.enc_id, mon.disappear_time)
@@ -548,8 +550,8 @@ class Manager(object):
         seconds_left = (mon.disappear_time
                         - datetime.utcnow()).total_seconds()
         if seconds_left < self.__time_limit:
-            log.debug("{} monster was skipped because only {} seconds remained"
-                      "".format(mon.name, seconds_left))
+            log.debug("({}) {} monster was skipped because only {} seconds remained"
+                      "".format(get_time_as_str(mon.disappear_time, self.__timezone)[0], mon.name, seconds_left))
             return
 
         # Calculate distance and direction
@@ -572,10 +574,10 @@ class Manager(object):
                 if not passed:
                     continue  # go to next filter
                 mon.custom_dts = f.custom_dts
-                if self.__quiet is False:
-                    log.info("{} monster notification"
+                if self.__hideTriggers is False:
+                    log.info("({}) {} monster notification"
                              " has been triggered in rule '{}'!"
-                             "".format(mon.name, r_name))
+                             "".format(get_time_as_str(mon.disappear_time, self.__timezone)[0], mon.name, r_name))
                 self._trigger_mon(mon, rule.alarm_names)
                 break  # Next rule
 
@@ -642,7 +644,7 @@ class Manager(object):
                 if not passed:
                     continue  # go to next filter
                 stop.custom_dts = f.custom_dts
-                if self.__quiet is False:
+                if self.__hideTriggers is False:
                     log.info("{} stop notification"
                              " has been triggered in rule '{}'!"
                              "".format(stop.name, r_name))
@@ -722,7 +724,7 @@ class Manager(object):
                 if not passed:
                     continue  # go to next filter
                 gym.custom_dts = f.custom_dts
-                if self.__quiet is False:
+                if self.__hideTriggers is False:
                     log.info("{} gym notification"
                              " has been triggered in rule '{}'!"
                              "".format(gym.name, r_name))
@@ -886,7 +888,7 @@ class Manager(object):
                 if not passed:
                     continue  # go to next filter
                 raid.custom_dts = f.custom_dts
-                if self.__quiet is False:
+                if self.__hideTriggers is False:
                     log.info("{} raid notification"
                              " has been triggered in rule '{}'!"
                              "".format(raid.name, r_name))
